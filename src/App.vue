@@ -1,21 +1,17 @@
 <template>
-  <div id="app" :style="bodyStyle">
-	  <router-view></router-view>
+ <div id="app">
+	<router-view></router-view>
   </div>
+  
 </template>
 
 <script>
 	//let centerdata=require("./test/DataCenter.js")
 	export default {
+		
 		data(){
 			return{
-				bodyStyle:{
-					width:'100%',
-					height:'100%',
-					margin:'0px',
-					padding:'0px',
-					
-				},
+				
 			}
 		},
 		mounted() {
@@ -36,13 +32,15 @@
 		maring:0px;
 		padding:0px
 	}
-	#app{
-		overflow: hidden;
+	/* 取消滚动条 */
+	/* ::-webkit-scrollbar {
+		width: 0 !important;
 	}
-	 ::-webkit-scrollbar {
-	     width: 0 !important;
-	   }
-	   ::-webkit-scrollbar {
-	     width: 0 !important;height: 0;
-	   }
+	::-webkit-scrollbar {
+		width: 0 !important;height: 0;
+	} */
+	#app {
+	  /* overflow: hidden; */
+	  width:100%;
+	}
 </style>

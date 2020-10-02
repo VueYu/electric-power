@@ -11,8 +11,10 @@
     "core-js": "^2.6.5",
     "echarts": "^4.9.0",
     "element-ui": "^2.13.2",
+    "mqtt": "^4.2.1",
     "vue": "^2.6.10",
-    "vue-router": "^3.4.3"
+    "vue-router": "^3.4.3",
+	"babel-polyfill" : "^6.23.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.8.0",

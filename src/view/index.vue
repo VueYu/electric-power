@@ -1,56 +1,29 @@
+<!-- 供电所显示 -->
 <template>
-	<el-container style="margin:0px;width: 100%;height:100%">
-	  <el-header style="height:8%;margin:0px;padding: 0px;border-bottom:2px solid #58595a;">
-		  <Title></Title>
-	  </el-header>
-	  <el-container style="height:calc(100% - 8%);">
-	    <el-aside style="width:200px;height: 100%;border-right:1px solid #000000">
-			<NavMenu></NavMenu>
-		</el-aside>
-	   <el-container style="height: 100%;width: calc(100% - 230px);">
-	      <el-header style="border-bottom:2px solid #f6f7f7;height:50px;margin:0px;padding:0px">
-	   			<NavBreadcrumb></NavBreadcrumb>
-	   	  </el-header>
-	      <el-main  style="margin:0px;padding: 0px;">
-			  <router-view>
-				
-			  </router-view>
-	   	  </el-main>
-	   </el-container>
-	  </el-container>
-	</el-container>
-	<!-- <div style="width: 100%;height:100%;box-sizing: border-box;">
-		<div style="border:1px solid #000000;width: 100%;height: 80px;">
+	<div class="index_style">
+		<div style="height:70px;line-height: 70px;width:100%;background-color: #459D9C;position:fixed;z-index: 99;">
 			<Title></Title>
 		</div>
 		
-		<div style="width: 100%;height:calc(100%-80px);border:1px solid yellow;overflow: hidden;">
-			<div style="border:1px solid #000000;height: 100%;width: 200px;float: left;">
+		<!-- <div class="index_aside_style">
+			<NavMenu></NavMenu>
+		</div> -->
+		<el-row :gutter="20" class="index_aside_style">
+			<el-col :span="15" style="min-width: 800px;">
 				<NavMenu></NavMenu>
-			</div>
-			
-			<div style="width: calc(100%-200px);float: left;height: 100%;border:1px solid #000000">
-				<div style="height: 50px;width: 100%;">
-					<NavBreadcrumb></NavBreadcrumb>
-				</div>
-				
-				<div style="height: calc(100%-50px);width:100%">
-					<router-view></router-view>
-				</div>
-			</div>
-		</div>
-	</div> -->
-	<!-- <div style="width: 100%;height:100%;box-sizing: border-box;border:1px solid #000000">
-		<el-row style="height:80px;border:1px solid #000000">
-			
-		</el-row>
-		<el-row style="height:100%;border: 1px solid yellow;">
-			<el-col :span="12" style="">
-				<p>123</p>
 			</el-col>
-			<el-col :span="12"><div class="grid-content bg-purple-light"></div></el-col>
+			<el-col :span="9">
+				<NavBreadcrumb style="padding-left:20px;min-width: 400px;"></NavBreadcrumb>
+			</el-col>
 		</el-row>
-	</div> -->
+		<div class="index_main_style">
+			<!-- <div>
+				<NavBreadcrumb style="padding-left:20px"></NavBreadcrumb>
+			</div> -->
+			<router-view v-if="isRouterAlive" style="padding:20px"></router-view>
+		</div>
+		<!-- <el-button @click="getNewToken">刷新Token</el-button> -->
+	</div>
 </template>
 
 <script>
@@ -67,12 +40,90 @@
 		},
 		data(){
 			return{
-				
+				isRouterAlive:false,
+				timer:null,
 			}
-		}
+		},
+		provide () {
+			return {
+				reload: this.reload
+			}
+		},
+		mounted() {
+			this.waitTime();
+		},
+		methods:{
+			reload(){
+				this.isRouterAlive = false
+				this.$nextTick(function () {
+					this.isRouterAlive = true
+				})
+			},
+			getNewToken(){
+				this.$axios({
+					 method: 'post',
+					 url:'/Account/FlushToken',
+				 }).then(response => {
+					console.log('刷新Token成功');
+					// console.log(response.data);
+					sessionStorage.setItem('token',response.data);
+				 }).catch(error => {  // 请求失败
+					console.log('请求失败');
+					console.log(error);
+				});
+			},
+			
+			refreshTime(){
+				var i=sessionStorage.getItem('num');
+				i=i-0;
+				i=i+1;
+				sessionStorage.setItem('num',i);
+				// console.log(sessionStorage.getItem('num'));
+				if(i==400){
+					sessionStorage.setItem('num',0);
+					this.getNewToken();
+				}
+			},
+			waitTime(){
+				this.timer=window.setInterval(() => {
+				  setTimeout(this.refreshTime, 0)
+				}, 1000)
+			},
+			// clearTimeout(this.timeOut)//清除计时器
+		},
+		beforeDestroy(){
+			console.log('清除定时器');
+			clearInterval(this.timer);　　// 清除定时器
+			sessionStorage.setItem('num',0);
+			// this.timer = null;
+		},
 	}
 </script>
 
-<style>
+<style scoped="scoped">
+	.index_style{
+		width:100%;
+		height: 100%;
+		box-sizing: border-box;
+		overflow-x: auto;
+		overflow-y: auto;
+	}
 	
+	.index_main_style{
+		background-color: white;
+		width: 100%;
+		height: calc(100% - 140px);
+		margin-top: 135px;
+		/* border: 1px solid #0000FF; */
+	}
+	
+	.index_aside_style{
+		width:100%;
+		height:60px;
+		position:fixed;
+		margin-top: 70px;
+	}
+	.index_aside_style::-webkit-scrollbar { 
+		width: 0 !important 
+	}
 </style>
